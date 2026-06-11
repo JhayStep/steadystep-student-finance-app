@@ -1,0 +1,8 @@
+steadystep-student-finance-app/
+│── README.md
+│
+└── docs/
+    │── problem-statement.md
+    │── target-user.md
+    │── features.md
+    │── team-norms.md
