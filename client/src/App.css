@@ -195,7 +195,19 @@ button {
     font-size: clamp(2.7rem, 12vw, 4.5rem);
   }
 }
+.footer {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 36px;
+  color: #94a3b8;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+.footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
 @media (max-width: 520px) {
   .navbar,
   .hero {
