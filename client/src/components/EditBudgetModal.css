@@ -1,0 +1,73 @@
+.budget-modal {
+  width: min(100%, 460px);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background: #111827;
+  color: #f8fafc;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.5);
+}
+
+.budget-modal-description {
+  margin: 16px 0 0;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.budget-form {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.budget-form label {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.budget-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.budget-input-wrapper:focus-within {
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.16);
+}
+
+.budget-input-wrapper span {
+  padding-left: 15px;
+  color: #86efac;
+  font-weight: 800;
+}
+
+.budget-input-wrapper input {
+  width: 100%;
+  padding: 13px 15px 13px 8px;
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font: inherit;
+}
+
+.budget-input-wrapper input:focus {
+  outline: none;
+}
+
+.budget-form-error {
+  margin: 2px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .budget-modal {
+    padding: 24px 20px;
+  }
+}

@@ -1,12 +1,19 @@
+import { Link } from "react-router-dom"
+
 function Navbar() {
   return (
     <header className="navbar">
-      <h1 className="logo">SteadyStep</h1>
+      <Link to="/" className="logo-link">
+        SteadyStep
+      </Link>
 
-      <nav className="nav-links">
+      <nav className="nav-links" aria-label="Main navigation">
         <a href="#features">Features</a>
         <a href="#about">About</a>
-        <button className="login-button">Log In</button>
+
+        <Link to="/login" className="login-button">
+          Log In
+        </Link>
       </nav>
     </header>
   )
