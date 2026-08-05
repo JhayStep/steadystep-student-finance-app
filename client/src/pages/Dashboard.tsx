@@ -6,6 +6,7 @@ import EditBudgetModal from "../components/EditBudgetModal"
 import EditSavingsModal from "../components/EditSavingsModal"
 import type { Bill } from "../components/AddBillModal"
 import type { Expense } from "../components/AddExpenseModal"
+import FinancialAidPanel from "../components/FinancialAidPanel"
 import "./Dashboard.css"
 
 type StoredUser = {
@@ -696,26 +697,7 @@ function Dashboard() {
             </div>
           </article>
 
-          <article className="dashboard-panel financial-aid-panel">
-            <p className="panel-label">Financial aid</p>
-            <h2>Important deadlines</h2>
-
-            <div className="deadline-card">
-              <div>
-                <strong>Scholarship application</strong>
-                <span>Due September 15</span>
-              </div>
-              <span className="deadline-status">Upcoming</span>
-            </div>
-
-            <div className="deadline-card">
-              <div>
-                <strong>FAFSA document review</strong>
-                <span>Due October 1</span>
-              </div>
-              <span className="deadline-status">Planned</span>
-            </div>
-          </article>
+                    <FinancialAidPanel />
         </section>
       </main>
 
