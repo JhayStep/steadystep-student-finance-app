@@ -169,6 +169,22 @@ function Dashboard() {
   const [monthlyBudget, setMonthlyBudget] = useState(loadBudget)
   const [savings, setSavings] = useState(loadSavings)
   const [savingsGoal, setSavingsGoal] = useState(loadSavingsGoal)
+  function handleResetDemoData() {
+  localStorage.removeItem("steadystepExpenses")
+  localStorage.removeItem("steadystepBills")
+  localStorage.removeItem("steadystepBudget")
+  localStorage.removeItem("steadystepSavings")
+  localStorage.removeItem("steadystepSavingsGoal")
+  localStorage.removeItem("steadystepAidDeadlines")
+
+  setExpenses(startingExpenses)
+  setBills(startingBills)
+  setMonthlyBudget(2000)
+  setSavings(650)
+  setSavingsGoal(1000)
+
+  window.location.reload()
+}
 
   const [isExpenseModalOpen, setIsExpenseModalOpen] =
     useState(false)
@@ -397,14 +413,25 @@ function Dashboard() {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="dashboard-logout"
-          onClick={handleLogout}
-        >
-          Log Out
-        </button>
-      </aside>
+        <div className="sidebar-actions">
+  <button
+    type="button"
+    className="reset-demo-button"
+    onClick={handleResetDemoData}
+  >
+    Reset Demo Data
+  </button>
+
+  <button
+    type="button"
+    className="dashboard-logout"
+    onClick={handleLogout}
+  >
+    Log Out
+  </button>
+</div>
+
+</aside>
 
       <main className="dashboard-page">
         <header className="dashboard-header">
