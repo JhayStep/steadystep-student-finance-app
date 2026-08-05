@@ -1,0 +1,51 @@
+.bill-modal {
+  width: min(100%, 470px);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background: #111827;
+  color: #f8fafc;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.5);
+}
+
+.bill-form {
+  margin-top: 26px;
+  display: grid;
+  gap: 12px;
+}
+
+.bill-form label {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.bill-form input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  font: inherit;
+}
+
+.bill-form input:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.16);
+}
+
+.bill-form-error {
+  margin: 2px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .bill-modal {
+    padding: 24px 20px;
+  }
+}

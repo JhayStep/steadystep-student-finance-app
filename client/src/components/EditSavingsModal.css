@@ -1,0 +1,98 @@
+.savings-modal {
+  width: min(100%, 470px);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background: #111827;
+  color: #f8fafc;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.5);
+}
+
+.savings-modal-description {
+  margin: 16px 0 0;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.savings-form {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.savings-form label {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.current-savings-display {
+  margin-bottom: 6px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.current-savings-display span {
+  color: #94a3b8;
+}
+
+.current-savings-display strong {
+  color: #86efac;
+  font-size: 1.2rem;
+}
+
+.savings-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.savings-input-wrapper:focus-within {
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.16);
+}
+
+.savings-input-wrapper span {
+  padding-left: 15px;
+  color: #86efac;
+  font-weight: 800;
+}
+
+.savings-input-wrapper input {
+  width: 100%;
+  padding: 13px 15px 13px 8px;
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font: inherit;
+}
+
+.savings-input-wrapper input:focus {
+  outline: none;
+}
+
+.savings-form-error {
+  margin: 2px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .savings-modal {
+    padding: 24px 20px;
+  }
+
+  .current-savings-display {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -462,3 +462,61 @@
     width: 100%;
   }
 }
+.bill-item {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.bill-item > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.bill-item span {
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.bill-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bill-status {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac !important;
+  font-weight: 700;
+}
+
+.delete-bill-button {
+  padding: 7px 10px;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.delete-bill-button:hover {
+  background: rgba(239, 68, 68, 0.18);
+}
+
+@media (max-width: 650px) {
+  .bill-item,
+  .bill-actions {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
