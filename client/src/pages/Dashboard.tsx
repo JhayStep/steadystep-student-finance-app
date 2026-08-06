@@ -1,12 +1,36 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
+
+import {
+  addBill as addBillToApi,
+  deleteBill as deleteBillFromApi,
+  getBills,
+} from "../api/billApi"
+import type { Bill } from "../api/billApi"
+
+import {
+  getBudget,
+  updateBudget,
+} from "../api/budgetApi"
+
+import {
+  addExpense as addExpenseToApi,
+  deleteExpense as deleteExpenseFromApi,
+  getExpenses,
+} from "../api/expenseApi"
+import type { Expense } from "../api/expenseApi"
+
+import {
+  getSavings,
+  updateSavings,
+} from "../api/savingsApi"
+
 import AddBillModal from "../components/AddBillModal"
 import AddExpenseModal from "../components/AddExpenseModal"
 import EditBudgetModal from "../components/EditBudgetModal"
 import EditSavingsModal from "../components/EditSavingsModal"
-import type { Bill } from "../components/AddBillModal"
-import type { Expense } from "../components/AddExpenseModal"
 import FinancialAidPanel from "../components/FinancialAidPanel"
+
 import "./Dashboard.css"
 
 type StoredUser = {
@@ -14,177 +38,30 @@ type StoredUser = {
   email: string
 }
 
-const startingExpenses: Expense[] = [
-  {
-    id: 1,
-    description: "Rent",
-    category: "Housing",
-    amount: 400,
-    date: "2026-08-01",
-  },
-  {
-    id: 2,
-    description: "Groceries",
-    category: "Food",
-    amount: 82.4,
-    date: "2026-08-04",
-  },
-  {
-    id: 3,
-    description: "Textbook",
-    category: "School",
-    amount: 64.99,
-    date: "2026-08-02",
-  },
-  {
-    id: 4,
-    description: "Bus Pass",
-    category: "Transportation",
-    amount: 45,
-    date: "2026-08-01",
-  },
-  {
-    id: 5,
-    description: "Phone Bill",
-    category: "Utilities",
-    amount: 55,
-    date: "2026-07-30",
-  },
-  {
-    id: 6,
-    description: "Dining Out",
-    category: "Food",
-    amount: 112.61,
-    date: "2026-07-29",
-  },
-]
-
-const startingBills: Bill[] = [
-  {
-    id: 101,
-    name: "Phone Bill",
-    amount: 55,
-    dueDate: "2026-08-08",
-  },
-  {
-    id: 102,
-    name: "Rent",
-    amount: 650,
-    dueDate: "2026-09-01",
-  },
-  {
-    id: 103,
-    name: "Streaming",
-    amount: 12,
-    dueDate: "2026-09-03",
-  },
-]
-
-function loadExpenses(): Expense[] {
-  const savedExpenses = localStorage.getItem("steadystepExpenses")
-
-  if (!savedExpenses) {
-    return startingExpenses
-  }
-
-  try {
-    const parsedExpenses = JSON.parse(savedExpenses)
-
-    return Array.isArray(parsedExpenses)
-      ? parsedExpenses
-      : startingExpenses
-  } catch {
-    return startingExpenses
-  }
-}
-
-function loadBills(): Bill[] {
-  const savedBills = localStorage.getItem("steadystepBills")
-
-  if (!savedBills) {
-    return startingBills
-  }
-
-  try {
-    const parsedBills = JSON.parse(savedBills)
-
-    return Array.isArray(parsedBills)
-      ? parsedBills
-      : startingBills
-  } catch {
-    return startingBills
-  }
-}
-
-function loadBudget(): number {
-  const savedBudget = localStorage.getItem("steadystepBudget")
-  const numericBudget = Number(savedBudget)
-
-  if (
-    !savedBudget ||
-    !Number.isFinite(numericBudget) ||
-    numericBudget <= 0
-  ) {
-    return 2000
-  }
-
-  return numericBudget
-}
-
-function loadSavings(): number {
-  const savedSavings = localStorage.getItem("steadystepSavings")
-  const numericSavings = Number(savedSavings)
-
-  if (
-    !savedSavings ||
-    !Number.isFinite(numericSavings) ||
-    numericSavings < 0
-  ) {
-    return 650
-  }
-
-  return numericSavings
-}
-
-function loadSavingsGoal(): number {
-  const savedGoal = localStorage.getItem("steadystepSavingsGoal")
-  const numericGoal = Number(savedGoal)
-
-  if (
-    !savedGoal ||
-    !Number.isFinite(numericGoal) ||
-    numericGoal <= 0
-  ) {
-    return 1000
-  }
-
-  return numericGoal
-}
-
 function Dashboard() {
   const navigate = useNavigate()
 
-  const [expenses, setExpenses] = useState<Expense[]>(loadExpenses)
-  const [bills, setBills] = useState<Bill[]>(loadBills)
-  const [monthlyBudget, setMonthlyBudget] = useState(loadBudget)
-  const [savings, setSavings] = useState(loadSavings)
-  const [savingsGoal, setSavingsGoal] = useState(loadSavingsGoal)
-  function handleResetDemoData() {
-  localStorage.removeItem("steadystepExpenses")
-  localStorage.removeItem("steadystepBills")
-  localStorage.removeItem("steadystepBudget")
-  localStorage.removeItem("steadystepSavings")
-  localStorage.removeItem("steadystepSavingsGoal")
-  localStorage.removeItem("steadystepAidDeadlines")
+  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [bills, setBills] = useState<Bill[]>([])
+  const [monthlyBudget, setMonthlyBudget] = useState(2000)
+  const [savings, setSavings] = useState(650)
+  const [savingsGoal, setSavingsGoal] = useState(1000)
 
-  setExpenses(startingExpenses)
-  setBills(startingBills)
-  setMonthlyBudget(2000)
-  setSavings(650)
-  setSavingsGoal(1000)
+  const [isLoadingExpenses, setIsLoadingExpenses] =
+    useState(true)
+  const [expenseError, setExpenseError] = useState("")
 
-  window.location.reload()
-}
+  const [isLoadingBills, setIsLoadingBills] =
+    useState(true)
+  const [billError, setBillError] = useState("")
+
+  const [isLoadingBudget, setIsLoadingBudget] =
+    useState(true)
+  const [budgetError, setBudgetError] = useState("")
+
+  const [isLoadingSavings, setIsLoadingSavings] =
+    useState(true)
+  const [savingsError, setSavingsError] = useState("")
 
   const [isExpenseModalOpen, setIsExpenseModalOpen] =
     useState(false)
@@ -208,34 +85,38 @@ function Dashboard() {
   }
 
   const displayName =
-    user?.name || user?.email?.split("@")[0] || "Student"
+    user?.name ||
+    user?.email?.split("@")[0] ||
+    "Student"
 
-  const totalSpent = useMemo(
-    () =>
-      expenses.reduce(
-        (total, expense) => total + expense.amount,
-        0,
-      ),
-    [expenses],
-  )
+  const totalSpent = useMemo(() => {
+    return expenses.reduce(
+      (total, expense) => total + expense.amount,
+      0,
+    )
+  }, [expenses])
 
   const remainingBudget = monthlyBudget - totalSpent
 
-  const spendingPercentage = Math.min(
-    (totalSpent / monthlyBudget) * 100,
-    100,
-  )
+  const spendingPercentage =
+    monthlyBudget > 0
+      ? Math.min(
+          (totalSpent / monthlyBudget) * 100,
+          100,
+        )
+      : 0
 
-  const savingsPercentage = Math.min(
-    (savings / savingsGoal) * 100,
-    100,
-  )
+  const savingsPercentage =
+    savingsGoal > 0
+      ? Math.min((savings / savingsGoal) * 100, 100)
+      : 0
 
   const categoryTotals = useMemo(() => {
     return expenses.reduce<Record<string, number>>(
       (totals, expense) => {
         totals[expense.category] =
-          (totals[expense.category] || 0) + expense.amount
+          (totals[expense.category] || 0) +
+          expense.amount
 
         return totals
       },
@@ -266,69 +147,216 @@ function Dashboard() {
   }).format(new Date())
 
   useEffect(() => {
-    localStorage.setItem(
-      "steadystepExpenses",
-      JSON.stringify(expenses),
-    )
-  }, [expenses])
+    async function loadExpensesFromApi() {
+      try {
+        setIsLoadingExpenses(true)
+        setExpenseError("")
+
+        const apiExpenses = await getExpenses()
+        setExpenses(apiExpenses)
+      } catch {
+        setExpenseError(
+          "Unable to load expenses from the server.",
+        )
+      } finally {
+        setIsLoadingExpenses(false)
+      }
+    }
+
+    void loadExpensesFromApi()
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem(
-      "steadystepBills",
-      JSON.stringify(bills),
-    )
-  }, [bills])
+    async function loadBillsFromApi() {
+      try {
+        setIsLoadingBills(true)
+        setBillError("")
+
+        const apiBills = await getBills()
+        setBills(apiBills)
+      } catch {
+        setBillError(
+          "Unable to load bills from the server.",
+        )
+      } finally {
+        setIsLoadingBills(false)
+      }
+    }
+
+    void loadBillsFromApi()
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem(
-      "steadystepBudget",
-      monthlyBudget.toString(),
-    )
-  }, [monthlyBudget])
+    async function loadBudgetFromApi() {
+      try {
+        setIsLoadingBudget(true)
+        setBudgetError("")
+
+        const budget = await getBudget()
+        setMonthlyBudget(budget.amount)
+      } catch {
+        setBudgetError(
+          "Unable to load the budget from the server.",
+        )
+      } finally {
+        setIsLoadingBudget(false)
+      }
+    }
+
+    void loadBudgetFromApi()
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem("steadystepSavings", savings.toString())
-    localStorage.setItem(
-      "steadystepSavingsGoal",
-      savingsGoal.toString(),
-    )
-  }, [savings, savingsGoal])
+    async function loadSavingsFromApi() {
+      try {
+        setIsLoadingSavings(true)
+        setSavingsError("")
 
-  function handleAddExpense(expense: Expense) {
-    setExpenses((currentExpenses) => [
-      expense,
-      ...currentExpenses,
-    ])
+        const savingsData = await getSavings()
+
+        setSavings(savingsData.saved)
+        setSavingsGoal(savingsData.target)
+      } catch {
+        setSavingsError(
+          "Unable to load savings from the server.",
+        )
+      } finally {
+        setIsLoadingSavings(false)
+      }
+    }
+
+    void loadSavingsFromApi()
+  }, [])
+
+  async function handleAddExpense(expense: Expense) {
+    try {
+      setExpenseError("")
+
+      const createdExpense = await addExpenseToApi({
+        description: expense.description,
+        category: expense.category,
+        amount: expense.amount,
+        date: expense.date,
+      })
+
+      setExpenses((currentExpenses) => [
+        createdExpense,
+        ...currentExpenses,
+      ])
+    } catch {
+      setExpenseError("Unable to add the expense.")
+    }
   }
 
-  function handleDeleteExpense(expenseId: number) {
-    setExpenses((currentExpenses) =>
-      currentExpenses.filter(
-        (expense) => expense.id !== expenseId,
-      ),
-    )
+  async function handleDeleteExpense(
+    expenseId: number,
+  ) {
+    try {
+      setExpenseError("")
+
+      await deleteExpenseFromApi(expenseId)
+
+      setExpenses((currentExpenses) =>
+        currentExpenses.filter(
+          (expense) => expense.id !== expenseId,
+        ),
+      )
+    } catch {
+      setExpenseError("Unable to delete the expense.")
+    }
   }
 
-  function handleAddBill(bill: Bill) {
-    setBills((currentBills) => [...currentBills, bill])
+  async function handleSaveBudget(amount: number) {
+    try {
+      setBudgetError("")
+
+      const updatedBudget = await updateBudget(amount)
+      setMonthlyBudget(updatedBudget.amount)
+    } catch {
+      setBudgetError("Unable to save the budget.")
+    }
   }
 
-  function handleDeleteBill(billId: number) {
-    setBills((currentBills) =>
-      currentBills.filter((bill) => bill.id !== billId),
-    )
+  async function handleAddBill(bill: Bill) {
+    try {
+      setBillError("")
+
+      const createdBill = await addBillToApi({
+        name: bill.name,
+        amount: bill.amount,
+        dueDate: bill.dueDate,
+      })
+
+      setBills((currentBills) => [
+        ...currentBills,
+        createdBill,
+      ])
+    } catch {
+      setBillError("Unable to add the bill.")
+    }
   }
 
-  function handleSaveBudget(budget: number) {
-    setMonthlyBudget(budget)
+  async function handleDeleteBill(billId: number) {
+    try {
+      setBillError("")
+
+      await deleteBillFromApi(billId)
+
+      setBills((currentBills) =>
+        currentBills.filter(
+          (bill) => bill.id !== billId,
+        ),
+      )
+    } catch {
+      setBillError("Unable to delete the bill.")
+    }
   }
 
-  function handleSaveSavings(
+  async function handleSaveSavings(
     updatedSavings: number,
     updatedGoal: number,
   ) {
-    setSavings(updatedSavings)
-    setSavingsGoal(updatedGoal)
+    try {
+      setSavingsError("")
+
+      const savingsData = await updateSavings(
+        updatedSavings,
+        updatedGoal,
+      )
+
+      setSavings(savingsData.saved)
+      setSavingsGoal(savingsData.target)
+    } catch {
+      setSavingsError("Unable to update savings.")
+    }
+  }
+
+  async function handleResetDemoData() {
+    try {
+      setBudgetError("")
+      setSavingsError("")
+
+      const [resetBudget, resetSavings] =
+        await Promise.all([
+          updateBudget(2000),
+          updateSavings(650, 1000),
+        ])
+
+      setMonthlyBudget(resetBudget.amount)
+      setSavings(resetSavings.saved)
+      setSavingsGoal(resetSavings.target)
+    } catch {
+      setBudgetError(
+        "Unable to reset all dashboard information.",
+      )
+      return
+    }
+
+    localStorage.removeItem(
+      "steadystepAidDeadlines",
+    )
+
+    window.location.reload()
   }
 
   function handleLogout() {
@@ -353,8 +381,10 @@ function Dashboard() {
   function getBillStatus(dueDate: string) {
     const today = new Date()
     const due = new Date(`${dueDate}T12:00:00`)
+
     const difference =
       due.getTime() - today.getTime()
+
     const daysUntilDue = Math.ceil(
       difference / (1000 * 60 * 60 * 24),
     )
@@ -375,28 +405,38 @@ function Dashboard() {
       <aside className="dashboard-sidebar">
         <div>
           <p className="sidebar-logo">SteadyStep</p>
-          <p className="sidebar-tagline">Student Finance</p>
+          <p className="sidebar-tagline">
+            Student Finance
+          </p>
         </div>
 
         <nav
           className="sidebar-navigation"
           aria-label="Dashboard navigation"
         >
-          <button type="button" className="sidebar-link active">
+          <button
+            type="button"
+            className="sidebar-link active"
+          >
             Dashboard
           </button>
+
           <button type="button" className="sidebar-link">
             Expenses
           </button>
+
           <button type="button" className="sidebar-link">
             Budgets
           </button>
+
           <button type="button" className="sidebar-link">
             Savings Goals
           </button>
+
           <button type="button" className="sidebar-link">
             Bills
           </button>
+
           <button type="button" className="sidebar-link">
             Financial Aid
           </button>
@@ -414,33 +454,40 @@ function Dashboard() {
         </div>
 
         <div className="sidebar-actions">
-  <button
-    type="button"
-    className="reset-demo-button"
-    onClick={handleResetDemoData}
-  >
-    Reset Demo Data
-  </button>
+          <button
+            type="button"
+            className="reset-demo-button"
+            onClick={() =>
+              void handleResetDemoData()
+            }
+          >
+            Reset Demo Data
+          </button>
 
-  <button
-    type="button"
-    className="dashboard-logout"
-    onClick={handleLogout}
-  >
-    Log Out
-  </button>
-</div>
-
-</aside>
+          <button
+            type="button"
+            className="dashboard-logout"
+            onClick={handleLogout}
+          >
+            Log Out
+          </button>
+        </div>
+      </aside>
 
       <main className="dashboard-page">
         <header className="dashboard-header">
           <div>
-            <p className="dashboard-date">{currentDate}</p>
-            <h1>Welcome back, {displayName}</h1>
+            <p className="dashboard-date">
+              {currentDate}
+            </p>
+
+            <h1>
+              Welcome back, {displayName}
+            </h1>
+
             <p className="dashboard-subtitle">
-              Here is a quick look at your financial progress this
-              month.
+              Here is a quick look at your financial
+              progress this month.
             </p>
           </div>
 
@@ -448,7 +495,10 @@ function Dashboard() {
             <button
               type="button"
               className="edit-budget-button"
-              onClick={() => setIsBudgetModalOpen(true)}
+              onClick={() =>
+                setIsBudgetModalOpen(true)
+              }
+              disabled={isLoadingBudget}
             >
               Edit Budget
             </button>
@@ -456,7 +506,9 @@ function Dashboard() {
             <button
               type="button"
               className="add-expense-button"
-              onClick={() => setIsExpenseModalOpen(true)}
+              onClick={() =>
+                setIsExpenseModalOpen(true)
+              }
             >
               + Add Expense
             </button>
@@ -472,16 +524,22 @@ function Dashboard() {
           <div>
             <span>Financial check-in</span>
             <strong>
-              {remainingBudget >= 0 ? "On track" : "Over budget"}
+              {remainingBudget >= 0
+                ? "On track"
+                : "Over budget"}
             </strong>
           </div>
 
           <div>
             <span>Savings status</span>
             <strong>
-              {savings >= savingsGoal
-                ? "Goal reached"
-                : `${savingsPercentage.toFixed(0)}% complete`}
+              {isLoadingSavings
+                ? "Loading..."
+                : savings >= savingsGoal
+                  ? "Goal reached"
+                  : `${savingsPercentage.toFixed(
+                      0,
+                    )}% complete`}
             </strong>
           </div>
         </section>
@@ -489,15 +547,35 @@ function Dashboard() {
         <section className="dashboard-summary">
           <article className="dashboard-card">
             <span>Monthly Budget</span>
-            <strong>{formatCurrency(monthlyBudget)}</strong>
-            <p>Your planned spending limit for this month.</p>
+
+            <strong>
+              {isLoadingBudget
+                ? "Loading..."
+                : formatCurrency(monthlyBudget)}
+            </strong>
+
+            {budgetError ? (
+              <p className="dashboard-data-error">
+                {budgetError}
+              </p>
+            ) : (
+              <p>
+                Your planned spending limit for this
+                month.
+              </p>
+            )}
           </article>
 
           <article className="dashboard-card">
             <span>Total Spent</span>
-            <strong>{formatCurrency(totalSpent)}</strong>
+
+            <strong>
+              {formatCurrency(totalSpent)}
+            </strong>
+
             <p>
-              You have used {spendingPercentage.toFixed(0)}% of your
+              You have used{" "}
+              {spendingPercentage.toFixed(0)}% of your
               monthly budget.
             </p>
           </article>
@@ -510,7 +588,11 @@ function Dashboard() {
             }`}
           >
             <span>Remaining</span>
-            <strong>{formatCurrency(remainingBudget)}</strong>
+
+            <strong>
+              {formatCurrency(remainingBudget)}
+            </strong>
+
             <p>
               {remainingBudget >= 0
                 ? "Available for the rest of the month."
@@ -520,14 +602,26 @@ function Dashboard() {
 
           <article className="dashboard-card">
             <span>Savings</span>
-            <strong>{formatCurrency(savings)}</strong>
-            <p>
-              {savings >= savingsGoal
-                ? "You reached your savings goal."
-                : `${formatCurrency(
-                    savingsGoal - savings,
-                  )} remaining to reach your goal.`}
-            </p>
+
+            <strong>
+              {isLoadingSavings
+                ? "Loading..."
+                : formatCurrency(savings)}
+            </strong>
+
+            {savingsError ? (
+              <p className="dashboard-data-error">
+                {savingsError}
+              </p>
+            ) : (
+              <p>
+                {savings >= savingsGoal
+                  ? "You reached your savings goal."
+                  : `${formatCurrency(
+                      savingsGoal - savings,
+                    )} remaining to reach your goal.`}
+              </p>
+            )}
           </article>
         </section>
 
@@ -535,29 +629,46 @@ function Dashboard() {
           <article className="dashboard-panel expenses-panel">
             <div className="panel-heading">
               <div>
-                <p className="panel-label">Recent expenses</p>
+                <p className="panel-label">
+                  Recent expenses
+                </p>
                 <h2>Latest activity</h2>
               </div>
 
               <button
                 type="button"
                 className="panel-button"
-                onClick={() => setIsExpenseModalOpen(true)}
+                onClick={() =>
+                  setIsExpenseModalOpen(true)
+                }
               >
                 Add Expense
               </button>
             </div>
 
             <div className="expense-list">
-              {sortedExpenses.length === 0 ? (
+              {isLoadingExpenses ? (
+                <p className="empty-state">
+                  Loading expenses...
+                </p>
+              ) : expenseError ? (
+                <p className="expense-api-error">
+                  {expenseError}
+                </p>
+              ) : sortedExpenses.length === 0 ? (
                 <p className="empty-state">
                   No expenses have been recorded yet.
                 </p>
               ) : (
                 sortedExpenses.map((expense) => (
-                  <div className="expense-item" key={expense.id}>
+                  <div
+                    className="expense-item"
+                    key={expense.id}
+                  >
                     <div>
-                      <strong>{expense.description}</strong>
+                      <strong>
+                        {expense.description}
+                      </strong>
                       <span>
                         {expense.category} ·{" "}
                         {formatDate(expense.date)}
@@ -573,7 +684,9 @@ function Dashboard() {
                         type="button"
                         className="delete-expense-button"
                         onClick={() =>
-                          handleDeleteExpense(expense.id)
+                          void handleDeleteExpense(
+                            expense.id,
+                          )
                         }
                       >
                         Delete
@@ -588,41 +701,61 @@ function Dashboard() {
           <article className="dashboard-panel">
             <div className="panel-heading">
               <div>
-                <p className="panel-label">Budget progress</p>
+                <p className="panel-label">
+                  Budget progress
+                </p>
                 <h2>Monthly spending</h2>
               </div>
 
               <button
                 type="button"
                 className="panel-button"
-                onClick={() => setIsBudgetModalOpen(true)}
+                onClick={() =>
+                  setIsBudgetModalOpen(true)
+                }
+                disabled={isLoadingBudget}
               >
                 Edit
               </button>
             </div>
 
             <div className="budget-progress-header">
-              <strong>{formatCurrency(totalSpent)} spent</strong>
-              <span>{formatCurrency(monthlyBudget)} budget</span>
+              <strong>
+                {formatCurrency(totalSpent)} spent
+              </strong>
+
+              <span>
+                {isLoadingBudget
+                  ? "Loading budget..."
+                  : `${formatCurrency(
+                      monthlyBudget,
+                    )} budget`}
+              </span>
             </div>
 
             <div className="budget-progress">
               <div
                 className="budget-progress-fill"
-                style={{ width: `${spendingPercentage}%` }}
-              ></div>
+                style={{
+                  width: `${spendingPercentage}%`,
+                }}
+              />
             </div>
 
             <div className="budget-category-list">
               {Object.entries(categoryTotals)
                 .sort(
-                  ([, firstAmount], [, secondAmount]) =>
-                    secondAmount - firstAmount,
+                  (
+                    [, firstAmount],
+                    [, secondAmount],
+                  ) => secondAmount - firstAmount,
                 )
                 .map(([category, amount]) => (
                   <div key={category}>
                     <span>{category}</span>
-                    <strong>{formatCurrency(amount)}</strong>
+                    <strong>
+                      {formatCurrency(amount)}
+                    </strong>
                   </div>
                 ))}
             </div>
@@ -631,72 +764,115 @@ function Dashboard() {
           <article className="dashboard-panel">
             <div className="panel-heading">
               <div>
-                <p className="panel-label">Savings goal</p>
+                <p className="panel-label">
+                  Savings goal
+                </p>
                 <h2>Emergency Fund</h2>
               </div>
 
               <button
                 type="button"
                 className="panel-button"
-                onClick={() => setIsSavingsModalOpen(true)}
+                onClick={() =>
+                  setIsSavingsModalOpen(true)
+                }
+                disabled={isLoadingSavings}
               >
                 Update
               </button>
             </div>
 
-            <div className="goal-amounts">
-              <strong>{formatCurrency(savings)} saved</strong>
-              <span>Goal: {formatCurrency(savingsGoal)}</span>
-            </div>
+            {savingsError ? (
+              <p className="expense-api-error">
+                {savingsError}
+              </p>
+            ) : (
+              <>
+                <div className="goal-amounts">
+                  <strong>
+                    {isLoadingSavings
+                      ? "Loading..."
+                      : `${formatCurrency(
+                          savings,
+                        )} saved`}
+                  </strong>
 
-            <div className="goal-progress">
-              <div
-                className="goal-progress-fill"
-                style={{ width: `${savingsPercentage}%` }}
-              ></div>
-            </div>
+                  <span>
+                    Goal:{" "}
+                    {formatCurrency(savingsGoal)}
+                  </span>
+                </div>
 
-            <p className="panel-description">
-              {savings >= savingsGoal
-                ? "Congratulations! You reached your emergency fund goal."
-                : `You are ${savingsPercentage.toFixed(
-                    0,
-                  )}% of the way toward your emergency fund goal.`}
-            </p>
+                <div className="goal-progress">
+                  <div
+                    className="goal-progress-fill"
+                    style={{
+                      width: `${savingsPercentage}%`,
+                    }}
+                  />
+                </div>
 
-            <button
-              type="button"
-              className="panel-button full-width-button"
-              onClick={() => setIsSavingsModalOpen(true)}
-            >
-              Add Savings
-            </button>
+                <p className="panel-description">
+                  {savings >= savingsGoal
+                    ? "Congratulations! You reached your emergency fund goal."
+                    : `You are ${savingsPercentage.toFixed(
+                        0,
+                      )}% of the way toward your emergency fund goal.`}
+                </p>
+
+                <button
+                  type="button"
+                  className="panel-button full-width-button"
+                  onClick={() =>
+                    setIsSavingsModalOpen(true)
+                  }
+                  disabled={isLoadingSavings}
+                >
+                  Add Savings
+                </button>
+              </>
+            )}
           </article>
 
           <article className="dashboard-panel">
             <div className="panel-heading">
               <div>
-                <p className="panel-label">Upcoming bills</p>
+                <p className="panel-label">
+                  Upcoming bills
+                </p>
                 <h2>Next due dates</h2>
               </div>
 
               <button
                 type="button"
                 className="panel-button"
-                onClick={() => setIsBillModalOpen(true)}
+                onClick={() =>
+                  setIsBillModalOpen(true)
+                }
               >
                 Add Bill
               </button>
             </div>
 
             <div className="bill-list">
-              {sortedBills.length === 0 ? (
+              {isLoadingBills ? (
+                <p className="empty-state">
+                  Loading bills...
+                </p>
+              ) : billError ? (
+                <p className="expense-api-error">
+                  {billError}
+                </p>
+              ) : sortedBills.length === 0 ? (
                 <p className="empty-state">
                   No upcoming bills have been added.
                 </p>
               ) : (
                 sortedBills.map((bill) => (
-                  <div className="bill-item" key={bill.id}>
+                  <div
+                    className="bill-item"
+                    key={bill.id}
+                  >
                     <div>
                       <strong>{bill.name}</strong>
                       <span>
@@ -713,7 +889,9 @@ function Dashboard() {
                       <button
                         type="button"
                         className="delete-bill-button"
-                        onClick={() => handleDeleteBill(bill.id)}
+                        onClick={() =>
+                          void handleDeleteBill(bill.id)
+                        }
                       >
                         Delete
                       </button>
@@ -724,13 +902,15 @@ function Dashboard() {
             </div>
           </article>
 
-                    <FinancialAidPanel />
+          <FinancialAidPanel />
         </section>
       </main>
 
       {isExpenseModalOpen && (
         <AddExpenseModal
-          onClose={() => setIsExpenseModalOpen(false)}
+          onClose={() =>
+            setIsExpenseModalOpen(false)
+          }
           onAddExpense={handleAddExpense}
         />
       )}
@@ -738,7 +918,9 @@ function Dashboard() {
       {isBudgetModalOpen && (
         <EditBudgetModal
           currentBudget={monthlyBudget}
-          onClose={() => setIsBudgetModalOpen(false)}
+          onClose={() =>
+            setIsBudgetModalOpen(false)
+          }
           onSaveBudget={handleSaveBudget}
         />
       )}
@@ -747,14 +929,18 @@ function Dashboard() {
         <EditSavingsModal
           currentSavings={savings}
           currentGoal={savingsGoal}
-          onClose={() => setIsSavingsModalOpen(false)}
+          onClose={() =>
+            setIsSavingsModalOpen(false)
+          }
           onSave={handleSaveSavings}
         />
       )}
 
       {isBillModalOpen && (
         <AddBillModal
-          onClose={() => setIsBillModalOpen(false)}
+          onClose={() =>
+            setIsBillModalOpen(false)
+          }
           onAddBill={handleAddBill}
         />
       )}
