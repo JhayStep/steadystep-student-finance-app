@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  description String
+  category    String
+  amount      Float
+  date        String
+  createdAt   DateTime @default(now())
+}
+
+model Budget {
+  id        Int      @id
+  amount    Float
+  updatedAt DateTime @updatedAt
+}
+
+model Bill {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Float
+  dueDate   String
+  createdAt DateTime @default(now())
+}
+
+model SavingsGoal {
+  id        Int      @id
+  saved     Float
+  target    Float
+  updatedAt DateTime @updatedAt
+}
+
+model AidDeadline {
+  id        Int      @id @default(autoincrement())
+  title     String
+  dueDate   String
+  status    String
+  createdAt DateTime @default(now())
+}
