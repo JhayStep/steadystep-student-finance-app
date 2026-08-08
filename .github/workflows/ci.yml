@@ -16,6 +16,9 @@ jobs:
       run:
         working-directory: server
 
+    env:
+      DATABASE_URL: "file:./prisma/ci.db"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
