@@ -1044,3 +1044,214 @@ Prisma ORM
         |
         v
 SQLite Database
+---
+
+# 8. Verification and Validation
+
+## 8.1 Verification and Validation Strategy
+
+SteadyStep uses automated testing, manual functional testing, continuous integration, and requirements traceability to verify that the implemented system matches the requirements defined in this SRS.
+
+The primary verification methods are:
+
+- **Automated validation tests:** Verify valid and invalid financial data such as expenses, budgets, bills, savings goals, and financial aid deadlines.
+- **API integration tests:** Exercise SteadyStep server endpoints and verify HTTP responses and validation behavior.
+- **Manual functional testing:** Confirms that features work correctly through the React user interface from the user's perspective.
+- **Continuous Integration:** GitHub Actions automatically installs dependencies, generates the Prisma client, executes the server test suite, builds the server, and builds the client.
+- **Coverage analysis:** Vitest with the V8 coverage provider measures which portions of the server code are exercised by automated tests.
+
+A requirement is considered verified when its associated test passes or its documented manual verification procedure succeeds.
+
+## 8.2 Automated Test Environment
+
+The SteadyStep server test suite uses:
+
+- Vitest as the automated test framework.
+- V8 as the code coverage provider.
+- TypeScript for test implementation.
+- Express API integration testing for server behavior.
+- Prisma with SQLite for application persistence.
+- GitHub Actions for continuous integration.
+
+Automated tests are stored under:
+
+`server/src/tests/`
+
+The current test files are:
+
+- `validation.test.ts`
+- `api.test.ts`
+
+Tests can be executed locally with:
+
+`npm test`
+
+Coverage can be generated with:
+
+`npm run coverage`
+
+## 8.3 Validation Testing
+
+Validation tests verify that SteadyStep accepts valid financial information and rejects invalid input.
+
+Current validation tests include:
+
+| Test ID | Verification |
+|---|---|
+| TEST-EXP-01 | Accepts a valid expense |
+| TEST-EXP-02 | Rejects a non-positive expense amount |
+| TEST-BUD-01 | Accepts a positive budget |
+| TEST-BILL-01 | Accepts a valid bill |
+| TEST-SAV-01 | Validates savings progress |
+| TEST-AID-01 | Validates a financial aid deadline |
+
+These tests protect core financial data from invalid values before the data is relied upon by the application.
+
+## 8.4 API Integration Testing
+
+API integration tests exercise the Express application and verify server behavior through actual API request/response paths.
+
+The integration suite currently contains 10 tests. Combined with the six validation tests, the automated suite contains:
+
+- **2 test files**
+- **16 automated tests**
+- **16 passing tests**
+- **0 failing tests**
+
+Integration testing covers core application behavior including API availability, valid requests, invalid requests, and financial feature endpoints.
+
+## 8.5 Continuous Integration Verification
+
+SteadyStep uses GitHub Actions as its Continuous Integration system.
+
+The workflow is stored at:
+
+`.github/workflows/ci.yml`
+
+For pushes and pull requests, CI performs automated verification of the application. The workflow includes:
+
+1. Checkout of the repository.
+2. Node.js environment setup.
+3. Dependency installation.
+4. Prisma client generation.
+5. Automated server tests.
+6. Server build.
+7. Client dependency installation.
+8. Client build.
+
+A successful green workflow indicates that the automated tests and required builds completed successfully in a clean CI environment.
+
+This provides additional verification beyond testing only on the developer's local computer.
+
+## 8.6 Code Coverage
+
+SteadyStep uses Vitest and the V8 coverage provider to measure automated server test coverage.
+
+At the current final verification point, the automated suite reports:
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 44.89% |
+| Branches | 18.64% |
+| Functions | 52.63% |
+| Lines | 44.89% |
+
+Individual components with stronger coverage include:
+
+- `app.ts` — 81.25% statement coverage
+- `prisma.ts` — 100% statement coverage
+- `budgetRoutes.ts` — 66.66% statement coverage
+- `expenseRoutes.ts` — 50% statement coverage
+- `healthRoutes.ts` — 100% statement coverage
+
+The coverage report should not be interpreted as proof that every possible application path has been tested. The automated suite prioritizes Must-have functionality, input validation, API integration, and critical server behavior. Several CRUD branches and error paths remain only partially covered.
+
+The report therefore provides measurable evidence that core functionality is automatically exercised while honestly identifying areas where additional automated testing could improve future versions of SteadyStep.
+
+## 8.7 Requirements Traceability Matrix
+
+The Requirements Traceability Matrix connects SteadyStep's Must-have functionality to its use cases and verification evidence.
+
+| Requirement | Feature | Related Use Case | Verification |
+|---|---|---|---|
+| FR-EXP-01 | Expense Tracking | Add Expense | TEST-EXP-01, API integration tests |
+| FR-EXP-02 | Expense Tracking | Add Expense | TEST-EXP-02, API integration tests |
+| FR-BUD-01 | Budget Management | Manage Budget | TEST-BUD-01, API integration tests |
+| FR-BILL-01 | Bill Tracking | Manage Bills | TEST-BILL-01, API integration tests |
+| FR-SAV-01 | Savings Goals | Manage Savings Goal | TEST-SAV-01, API integration tests |
+| FR-AID-01 | Financial Aid Deadlines | Manage Aid Deadline | TEST-AID-01, API integration tests |
+
+The matrix provides traceability from requirements to real application behavior and corresponding verification activities.
+
+If requirement identifiers elsewhere in this SRS are changed during development, this matrix must be updated so the identifiers remain consistent.
+
+## 8.8 Defect Tracking
+
+Known software defects are tracked using GitHub Issues.
+
+Each defect Issue should contain:
+
+- A clear description of the defect.
+- Steps required to reproduce the problem.
+- Expected behavior.
+- Actual behavior.
+- Severity or priority.
+- A reference to the related feature Issue using `refs #<issue-number>`.
+
+Suggested severity levels are:
+
+- **Critical:** Prevents the application or a core feature from functioning.
+- **High:** Major feature behavior is incorrect with no reasonable workaround.
+- **Medium:** Feature works but contains a noticeable functional problem.
+- **Low:** Minor problem that does not prevent normal use.
+
+Resolved defects should reference the fixing commit or pull request when applicable.
+
+At final submission, any known unresolved defects will remain documented as GitHub Issues rather than being omitted from the project record.
+
+## 8.9 Final Verification Status
+
+At the current verification point:
+
+- The server automated test suite passes.
+- 16 of 16 automated tests pass.
+- Server coverage reporting is operational.
+- GitHub Actions CI successfully verifies the server and client.
+- The server builds successfully.
+- The client builds successfully.
+- Core SteadyStep financial features have been manually demonstrated through the running application.
+
+Together, automated testing, CI verification, coverage reporting, manual testing, and requirements traceability provide the verification evidence for the current SteadyStep prototype.
+---
+
+# 8. Requirements Traceability
+
+## 8.1 Requirements Traceability Matrix
+
+The following Requirements Traceability Matrix (RTM) connects SteadyStep's functional requirements to their related use cases, implementation components, and verification tests. This matrix provides evidence that the documented requirements are represented in both the system design and implementation.
+
+| Requirement | Feature | Use Case | Implementation | Verification |
+|---|---|---|---|---|
+| FR-EXP-01 – FR-EXP-06 | Expense Tracking | UC-01 | Expense API / Expense model | API and validation tests |
+| FR-BUD-01 – FR-BUD-06 | Budget Management and Summary | UC-02, UC-03 | Budget API / Budget model | API and validation tests |
+| FR-BILL-01 – FR-BILL-07 | Bill Reminders | UC-04 | Bill API / Bill model | API and validation tests |
+| FR-SAV-01 – FR-SAV-06 | Savings Goal Tracking | UC-05 | Savings API / SavingsGoal model | API and validation tests |
+| FR-AID-01 – FR-AID-06 | Financial Aid Deadline Tracking | UC-06 | Financial Aid API / AidDeadline model | API and validation tests |
+
+## 8.2 Verification Evidence
+
+Automated verification is implemented using Vitest. Validation tests verify input requirements for expenses, budgets, bills, savings goals, and financial aid deadlines. API integration tests verify the behavior of the Express REST API and its interaction with the application's persistence layer.
+
+The automated test suite is executed locally using:
+
+`npm test`
+
+Test coverage can be generated using:
+
+`npm run coverage`
+
+Continuous Integration is configured through GitHub Actions. The CI workflow installs dependencies, generates the Prisma client, executes the automated test suite, and builds the application. This provides repeatable verification whenever changes are pushed to the repository.
+
+## 8.3 Traceability Summary
+
+SteadyStep maintains traceability from documented requirements through use cases, implementation components, and automated verification. The RTM can be updated as additional functionality or tests are added to the system.

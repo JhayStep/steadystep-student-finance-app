@@ -13,17 +13,7 @@ dotenv.config()
 
 const app = express()
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-    ],
-  }),
-)
-
+app.use(cors())
 app.use(express.json())
 
 app.use("/api/health", healthRouter)
@@ -39,10 +29,12 @@ app.use((_request, response) => {
   })
 })
 
-const port = Number(process.env.PORT) || 3000
+export default app
 
-app.listen(port, () => {
-  console.log(
-    `SteadyStep API running at http://localhost:${port}`,
-  )
-})
+if (process.env.NODE_ENV !== "test") {
+  const port = Number(process.env.PORT) || 3000
+
+  app.listen(port, () => {
+    console.log(`SteadyStep API running at http://localhost:${port}`)
+  })
+}
