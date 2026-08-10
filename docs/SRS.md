@@ -1170,20 +1170,30 @@ The report therefore provides measurable evidence that core functionality is aut
 
 ## 8.7 Requirements Traceability Matrix
 
-The Requirements Traceability Matrix connects SteadyStep's Must-have functionality to its use cases and verification evidence.
+The Requirements Traceability Matrix connects SteadyStep's Must-have functional requirements to their corresponding use cases and verification evidence. Each Must-have requirement is mapped to at least one test ID so that implementation and verification can be traced directly to the requirements defined in this SRS.
 
 | Requirement | Feature | Related Use Case | Verification |
 |---|---|---|---|
-| FR-EXP-01 | Expense Tracking | Add Expense | TEST-EXP-01, API integration tests |
-| FR-EXP-02 | Expense Tracking | Add Expense | TEST-EXP-02, API integration tests |
-| FR-BUD-01 | Budget Management | Manage Budget | TEST-BUD-01, API integration tests |
-| FR-BILL-01 | Bill Tracking | Manage Bills | TEST-BILL-01, API integration tests |
-| FR-SAV-01 | Savings Goals | Manage Savings Goal | TEST-SAV-01, API integration tests |
-| FR-AID-01 | Financial Aid Deadlines | Manage Aid Deadline | TEST-AID-01, API integration tests |
+| FR-EXP-01 | Expense Tracking | UC-01 — Record an Expense | TEST-EXP-01 |
+| FR-EXP-02 | Expense Tracking | UC-01 — Record an Expense | TEST-EXP-02 |
+| FR-EXP-03 | Expense Tracking | UC-01 — Record an Expense | TEST-EXP-03 |
+| FR-EXP-04 | Expense Tracking | UC-01 — Record an Expense | TEST-EXP-04 |
+| FR-EXP-05 | Expense Tracking | UC-01 — Record an Expense | TEST-API-01 |
+| FR-EXP-06 | Expense Tracking | UC-01 — Record an Expense | TEST-API-02 |
+| FR-BUD-01 | Budget Management | UC-02 — Manage Budget | TEST-BUD-01 |
+| FR-BUD-02 | Budget Management | UC-02 — Manage Budget | TEST-BUD-02 |
+| FR-BUD-03 | Budget Management | UC-02 — Manage Budget | TEST-BUD-03 |
+| FR-BILL-01 | Bill Tracking | UC-03 — Manage Bills | TEST-BILL-01 |
+| FR-BILL-02 | Bill Tracking | UC-03 — Manage Bills | TEST-BILL-02 |
+| FR-BILL-03 | Bill Tracking | UC-03 — Manage Bills | TEST-BILL-03 |
+| FR-SAV-01 | Savings Goals | UC-04 — Manage Savings Goal | TEST-SAV-01 |
+| FR-SAV-02 | Savings Goals | UC-04 — Manage Savings Goal | TEST-SAV-02 |
+| FR-AID-01 | Financial Aid Deadlines | UC-05 — Manage Aid Deadline | TEST-AID-01 |
+| FR-AID-02 | Financial Aid Deadlines | UC-05 — Manage Aid Deadline | TEST-AID-02 |
 
-The matrix provides traceability from requirements to real application behavior and corresponding verification activities.
+The matrix provides direct traceability between SteadyStep's Must-have requirements, use cases, and automated verification activities. The listed test IDs correspond to tests documented in the V&V plan and implemented in the repository's automated test suite.
 
-If requirement identifiers elsewhere in this SRS are changed during development, this matrix must be updated so the identifiers remain consistent.
+Where multiple requirements are exercised through the same API workflow, integration testing supplements the feature-specific verification. Coverage results provide additional evidence that the application's core server behavior is exercised, but coverage percentage alone does not demonstrate that every possible behavior or error path has been tested.
 
 ## 8.8 Defect Tracking
 

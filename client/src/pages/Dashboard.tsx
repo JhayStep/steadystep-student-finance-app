@@ -400,6 +400,13 @@ function Dashboard() {
     return "Upcoming"
   }
 
+  function scrollToSection(sectionId: string) {
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  }
+
   return (
     <div className="dashboard-layout">
       <aside className="dashboard-sidebar">
@@ -417,27 +424,55 @@ function Dashboard() {
           <button
             type="button"
             className="sidebar-link active"
+            onClick={() =>
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              })
+            }
           >
             Dashboard
           </button>
 
-          <button type="button" className="sidebar-link">
+          <button
+            type="button"
+            className="sidebar-link"
+            onClick={() => scrollToSection("expenses-section")}
+          >
             Expenses
           </button>
 
-          <button type="button" className="sidebar-link">
+          <button
+            type="button"
+            className="sidebar-link"
+            onClick={() => scrollToSection("budget-section")}
+          >
             Budgets
           </button>
 
-          <button type="button" className="sidebar-link">
+          <button
+            type="button"
+            className="sidebar-link"
+            onClick={() => scrollToSection("savings-section")}
+          >
             Savings Goals
           </button>
 
-          <button type="button" className="sidebar-link">
+          <button
+            type="button"
+            className="sidebar-link"
+            onClick={() => scrollToSection("bills-section")}
+          >
             Bills
           </button>
 
-          <button type="button" className="sidebar-link">
+          <button
+            type="button"
+            className="sidebar-link"
+            onClick={() =>
+              scrollToSection("financial-aid-section")
+            }
+          >
             Financial Aid
           </button>
         </nav>
@@ -626,7 +661,10 @@ function Dashboard() {
         </section>
 
         <section className="dashboard-grid">
-          <article className="dashboard-panel expenses-panel">
+          <article
+            id="expenses-section"
+            className="dashboard-panel expenses-panel"
+          >
             <div className="panel-heading">
               <div>
                 <p className="panel-label">
@@ -698,7 +736,10 @@ function Dashboard() {
             </div>
           </article>
 
-          <article className="dashboard-panel">
+          <article
+            id="budget-section"
+            className="dashboard-panel"
+          >
             <div className="panel-heading">
               <div>
                 <p className="panel-label">
@@ -761,7 +802,10 @@ function Dashboard() {
             </div>
           </article>
 
-          <article className="dashboard-panel">
+          <article
+            id="savings-section"
+            className="dashboard-panel"
+          >
             <div className="panel-heading">
               <div>
                 <p className="panel-label">
@@ -834,7 +878,10 @@ function Dashboard() {
             )}
           </article>
 
-          <article className="dashboard-panel">
+          <article
+            id="bills-section"
+            className="dashboard-panel"
+          >
             <div className="panel-heading">
               <div>
                 <p className="panel-label">
@@ -902,7 +949,9 @@ function Dashboard() {
             </div>
           </article>
 
-          <FinancialAidPanel />
+          <div id="financial-aid-section">
+            <FinancialAidPanel />
+          </div>
         </section>
       </main>
 
